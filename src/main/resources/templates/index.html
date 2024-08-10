@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sales Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table td, .table th {
+            vertical-align: middle; /* Center align the content vertically */
+        }
+
+        .table-actions {
+            white-space: nowrap; /* Prevent the action buttons from wrapping */
+        }
+
+        .btn-inline {
+            margin-right: 5px;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-inline .form-control, .form-inline .form-select {
+            width: auto;
+            flex: 1;
+        }
+
+        .form-inline .form-group {
+            flex-grow: 1;
+        }
+
+        .form-submit-group {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Sales Management</h1>
+
+    <!-- Form to Add New Sales Record -->
+    <div class="card p-4 mb-5">
+        <h2 class="text-center">Add New Sales Record</h2>
+        <form th:action="@{/add}" method="post" class="form-inline">
+            <div class="form-group">
+                <label for="salesmanName" class="form-label">Salesman Name</label>
+                <input type="text" id="salesmanName" name="salesmanName" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="itemType" class="form-label">Item Type</label>
+                <select id="itemType" name="itemType" class="form-select" required>
+                    <option value="Washing Machine">Washing Machine</option>
+                    <option value="Refrigerator">Refrigerator</option>
+                    <option value="Music System">Music System</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="salesAmount" class="form-label">Sales Amount</label>
+                <input type="number" id="salesAmount" name="salesAmount" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="transactionDate" class="form-label">Transaction Date</label>
+                <input type="date" id="transactionDate" name="transactionDate" class="form-control" th:value="${today}" />
+            </div>
+            <div class="form-submit-group">
+                <input type="submit" value="Save Sales Record" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+    <!-- Sales Summary Table -->
+    <h2 class="text-center">Sales Summary</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mt-3">
+            <thead class="table-dark">
+            <tr>
+                <th>Salesman Name</th>
+                <th>Washing Machine Sales</th>
+                <th>Refrigerator Sales</th>
+                <th>Music System Sales</th>
+                <th>Total Sales</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${salesSummary}">
+                <td th:text="${entry.key}"></td>
+                <td th:text="${entry.value['Washing Machine'] ?: 0.0}"></td>
+                <td th:text="${entry.value['Refrigerator'] ?: 0.0}"></td>
+                <td th:text="${entry.value['Music System'] ?: 0.0}"></td>
+                <td th:text="${(entry.value['Washing Machine'] ?: 0.0) + (entry.value['Refrigerator'] ?: 0.0) + (entry.value['Music System'] ?: 0.0)}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Display of Sales Records -->
+    <h2 class="text-center">Sales Records</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mt-3">
+            <thead class="table-dark">
+            <tr>
+                <th>Transaction ID</th>
+                <th>Salesman Name</th>
+                <th>Item Type</th>
+                <th>Sales Amount</th>
+                <th>Transaction Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${salesRecords}">
+                <td th:text="${record.transactionId}"></td>
+                <td th:text="${record.salesmanName}"></td>
+                <td th:text="${record.itemType}"></td>
+                <td th:text="${record.salesAmount}"></td>
+                <td th:text="${record.transactionDate}"></td>
+                <td class="table-actions">
+                    <a th:href="@{/edit/{id}(id=${record.transactionId})}" class="btn btn-sm btn-warning btn-inline">Edit</a>
+                    <a th:href="@{/delete/{id}(id=${record.transactionId})}" class="btn btn-sm btn-danger btn-inline" onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
